@@ -1,2 +1,2 @@
 # test
-A throwaway repository to investigate Golang scripts
+A throw-away repository to play with Golang scripts
