@@ -2,35 +2,60 @@ package main
 
 import "fmt"
 
-type ScientificName struct {
-	Parsed   bool
-	Verbatim string
-	Details  []item
-}
-
-type item struct {
-	Uninomial uninomial
-}
-
-type uninomial struct {
-	Value string
-}
-
 func main() {
 	b := []byte("Homo")
-	res, err := Parse("", b)
+	res, err := Parse("ddd", b)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	sn := res.(ScientificName)
+	sn := res.(scientificNameNode)
 	sn.Verbatim = string(b)
 	fmt.Println(sn)
 }
 
-func scientificName(n []byte) ScientificName {
-	u := uninomial{Value: string(n)}
-	det := []item{item{Uninomial: u}}
-	res := ScientificName{Parsed: true, Details: det}
-	return res
+type Node interface {
+	exec() error
+}
+
+type scientificNameNode struct {
+	NamesGroupNode namesGroupNode
+	Parsed         bool
+	Verbatim       string
+}
+
+func newScientificNameNode(nameGr namesGroupNode) (scientificNameNode, error) {
+	sn := scientificNameNode{NamesGroupNode: nameGr}
+	return sn, nil
+}
+
+type namesGroupNode struct {
+	NameNodes []nameNode
+}
+
+func newNamesGroupNode(names interface{}) (namesGroupNode, error) {
+	items := toIfaceSlice(names)
+	gn := make([]nameNode, len(items))
+	for i, v := range items {
+		gn[i] = v.(nameNode)
+	}
+	return namesGroupNode{NameNodes: gn}, nil
+}
+
+type nameNode struct {
+	Uninomial uninomialNode
+}
+
+func newNameNode(n uninomialNode) (nameNode, error) {
+	nn := nameNode{Uninomial: n}
+	return nn, nil
+}
+
+type uninomialNode struct {
+	Value string
+}
+
+func newUninomialNode(v string) (uninomialNode, error) {
+	un := uninomialNode{Value: v}
+	return un, nil
 }

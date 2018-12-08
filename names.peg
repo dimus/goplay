@@ -1,12 +1,44 @@
-Name <- Word !. {
-  sn := scientificName(c.text)
-  return sn, nil
+{
+package main
+
+func toIfaceSlice(v interface{}) []interface{} {
+    if v == nil {
+        return nil
+    }
+    return v.([]interface{})
+}
 }
 
-Word <- Char+ {
+SciName <- grp:NameGroup !. {
+  return newScientificNameNode(grp.(namesGroupNode))
+}
+
+NameGroup <- names:Name+ {
+  return newNamesGroupNode(names)
+}
+
+Name <- uni:Uninomial {
+  return newNameNode(uni.(uninomialNode))
+}
+
+Uninomial <- CapWord {
+  return newUninomialNode(string(c.text))
+}
+
+CapWord <- CapChar Word {
   return c.text, nil
 }
 
-Char <- [a-z] / [A-Z] {
+Word <- Char+ {
+  c.state["wrd"]=true
+  c.globalStore["wrd"]=true
+  return c.text, nil
+}
+
+CapChar <- [A-Z] {
+  return c.text, nil
+}
+
+Char <- [a-z] {
   return c.text, nil
 }

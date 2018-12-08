@@ -1,14 +1,16 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
+GOINSTALL=$(GOCMD) install
 GOCLEAN=$(GOCMD) clean
 
 
-all: build
+all: install
 
 build: peg
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GOBUILD)
 
+install: peg
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GOINSTALL)
 
 peg:
-	echo "package main\n" > names.go
-	pigeon names.peg >> names.go
+	pigeon -o names.go names.peg
