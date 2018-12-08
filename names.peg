@@ -1,0 +1,12 @@
+Name <- Word !. {
+  sn := scientificName(c.text)
+  return sn, nil
+}
+
+Word <- Char+ {
+  return c.text, nil
+}
+
+Char <- [a-z] / [A-Z] {
+  return c.text, nil
+}
