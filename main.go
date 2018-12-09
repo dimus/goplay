@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+)
 
 func main() {
 	b := []byte("Homo")
@@ -10,8 +13,12 @@ func main() {
 	}
 
 	sn := res.(scientificNameNode)
-	sn.Verbatim = string(b)
-	fmt.Println(sn)
+	output := newOutput(sn)
+	json, err := output.toJSON(false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(json))
 }
 
 type Node interface {
