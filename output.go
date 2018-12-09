@@ -19,12 +19,32 @@ type output struct {
 	Surrogate     bool                `json:"surrogate"`
 	Virus         bool                `json:"virus"`
 	Bacteria      bool                `json:"bacteria"`
-	Details       namesGroupOutput    `json:"details,omitempty"`
+	Details       []nameOutput        `json:"details,omitempty"`
 	Positions     positionsOutput     `json:"positions,omitempty"`
 }
 
 func newOutput(sn scientificNameNode) *output {
-	o := output{}
+	c := canonicalNameOutput{
+		Value:       sn.CanonicalNode.Value,
+		ValueRanked: sn.CanonicalNode.ValueRanked,
+	}
+	det := []nameOutput{
+		nameOutput{uninomialOutput{Value: sn.Verbatim}},
+	}
+	pos := []posOutput{
+		{Type: "uninomial", Start: 0, End: 16},
+	}
+	o := output{
+		Parsed:        true,
+		Quality:       1,
+		Verbatim:      sn.Verbatim,
+		NameStringID:  sn.VerbatimID,
+		CanonicalName: c,
+		Normalized:    sn.Verbatim,
+		Positions:     pos,
+		Details:       det,
+		ParserVersion: "test_version",
+	}
 	return &o
 }
 
@@ -47,7 +67,7 @@ type canonicalNameOutput struct {
 	ValueRanked string `json:"valueRanked"`
 }
 
-type namesGroupOutput struct {
+type nameOutput struct {
 	Uninomial uninomialOutput `json:"uninomial,omitempty"`
 }
 

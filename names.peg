@@ -10,11 +10,11 @@ func toIfaceSlice(v interface{}) []interface{} {
 }
 
 SciName <- grp:NameGroup !. {
-  return newScientificNameNode(grp.(namesGroupNode))
+  return newScientificNameNode(grp.([]nameNode))
 }
 
 NameGroup <- names:Name+ {
-  return newNamesGroupNode(names)
+  return newNamesGroup(names)
 }
 
 Name <- uni:Uninomial {

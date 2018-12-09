@@ -55,17 +55,17 @@ var g = &grammar{
 		},
 		{
 			name: "NameGroup",
-			pos:  position{line: 16, col: 1, offset: 228},
+			pos:  position{line: 16, col: 1, offset: 224},
 			expr: &actionExpr{
-				pos: position{line: 16, col: 14, offset: 241},
+				pos: position{line: 16, col: 14, offset: 237},
 				run: (*parser).callonNameGroup1,
 				expr: &labeledExpr{
-					pos:   position{line: 16, col: 14, offset: 241},
+					pos:   position{line: 16, col: 14, offset: 237},
 					label: "names",
 					expr: &oneOrMoreExpr{
-						pos: position{line: 16, col: 20, offset: 247},
+						pos: position{line: 16, col: 20, offset: 243},
 						expr: &ruleRefExpr{
-							pos:  position{line: 16, col: 20, offset: 247},
+							pos:  position{line: 16, col: 20, offset: 243},
 							name: "Name",
 						},
 					},
@@ -74,15 +74,15 @@ var g = &grammar{
 		},
 		{
 			name: "Name",
-			pos:  position{line: 20, col: 1, offset: 292},
+			pos:  position{line: 20, col: 1, offset: 284},
 			expr: &actionExpr{
-				pos: position{line: 20, col: 9, offset: 300},
+				pos: position{line: 20, col: 9, offset: 292},
 				run: (*parser).callonName1,
 				expr: &labeledExpr{
-					pos:   position{line: 20, col: 9, offset: 300},
+					pos:   position{line: 20, col: 9, offset: 292},
 					label: "uni",
 					expr: &ruleRefExpr{
-						pos:  position{line: 20, col: 13, offset: 304},
+						pos:  position{line: 20, col: 13, offset: 296},
 						name: "Uninomial",
 					},
 				},
@@ -90,31 +90,31 @@ var g = &grammar{
 		},
 		{
 			name: "Uninomial",
-			pos:  position{line: 24, col: 1, offset: 361},
+			pos:  position{line: 24, col: 1, offset: 353},
 			expr: &actionExpr{
-				pos: position{line: 24, col: 14, offset: 374},
+				pos: position{line: 24, col: 14, offset: 366},
 				run: (*parser).callonUninomial1,
 				expr: &ruleRefExpr{
-					pos:  position{line: 24, col: 14, offset: 374},
+					pos:  position{line: 24, col: 14, offset: 366},
 					name: "CapWord",
 				},
 			},
 		},
 		{
 			name: "CapWord",
-			pos:  position{line: 28, col: 1, offset: 429},
+			pos:  position{line: 28, col: 1, offset: 421},
 			expr: &actionExpr{
-				pos: position{line: 28, col: 12, offset: 440},
+				pos: position{line: 28, col: 12, offset: 432},
 				run: (*parser).callonCapWord1,
 				expr: &seqExpr{
-					pos: position{line: 28, col: 12, offset: 440},
+					pos: position{line: 28, col: 12, offset: 432},
 					exprs: []interface{}{
 						&ruleRefExpr{
-							pos:  position{line: 28, col: 12, offset: 440},
+							pos:  position{line: 28, col: 12, offset: 432},
 							name: "CapChar",
 						},
 						&ruleRefExpr{
-							pos:  position{line: 28, col: 20, offset: 448},
+							pos:  position{line: 28, col: 20, offset: 440},
 							name: "Word",
 						},
 					},
@@ -123,14 +123,14 @@ var g = &grammar{
 		},
 		{
 			name: "Word",
-			pos:  position{line: 32, col: 1, offset: 479},
+			pos:  position{line: 32, col: 1, offset: 471},
 			expr: &actionExpr{
-				pos: position{line: 32, col: 9, offset: 487},
+				pos: position{line: 32, col: 9, offset: 479},
 				run: (*parser).callonWord1,
 				expr: &oneOrMoreExpr{
-					pos: position{line: 32, col: 9, offset: 487},
+					pos: position{line: 32, col: 9, offset: 479},
 					expr: &ruleRefExpr{
-						pos:  position{line: 32, col: 9, offset: 487},
+						pos:  position{line: 32, col: 9, offset: 479},
 						name: "Char",
 					},
 				},
@@ -138,12 +138,12 @@ var g = &grammar{
 		},
 		{
 			name: "CapChar",
-			pos:  position{line: 38, col: 1, offset: 569},
+			pos:  position{line: 38, col: 1, offset: 561},
 			expr: &actionExpr{
-				pos: position{line: 38, col: 12, offset: 580},
+				pos: position{line: 38, col: 12, offset: 572},
 				run: (*parser).callonCapChar1,
 				expr: &charClassMatcher{
-					pos:        position{line: 38, col: 12, offset: 580},
+					pos:        position{line: 38, col: 12, offset: 572},
 					val:        "[A-Z]",
 					ranges:     []rune{'A', 'Z'},
 					ignoreCase: false,
@@ -153,12 +153,12 @@ var g = &grammar{
 		},
 		{
 			name: "Char",
-			pos:  position{line: 42, col: 1, offset: 612},
+			pos:  position{line: 42, col: 1, offset: 604},
 			expr: &actionExpr{
-				pos: position{line: 42, col: 9, offset: 620},
+				pos: position{line: 42, col: 9, offset: 612},
 				run: (*parser).callonChar1,
 				expr: &charClassMatcher{
-					pos:        position{line: 42, col: 9, offset: 620},
+					pos:        position{line: 42, col: 9, offset: 612},
 					val:        "[a-z]",
 					ranges:     []rune{'a', 'z'},
 					ignoreCase: false,
@@ -170,7 +170,7 @@ var g = &grammar{
 }
 
 func (c *current) onSciName1(grp interface{}) (interface{}, error) {
-	return newScientificNameNode(grp.(namesGroupNode))
+	return newScientificNameNode(grp.([]nameNode))
 }
 
 func (p *parser) callonSciName1() (interface{}, error) {
@@ -180,7 +180,7 @@ func (p *parser) callonSciName1() (interface{}, error) {
 }
 
 func (c *current) onNameGroup1(names interface{}) (interface{}, error) {
-	return newNamesGroupNode(names)
+	return newNamesGroup(names)
 }
 
 func (p *parser) callonNameGroup1() (interface{}, error) {
