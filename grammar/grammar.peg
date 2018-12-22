@@ -1,0 +1,24 @@
+package grammar
+
+type GNParser Peg {
+}
+
+SciName <- Uninomial !.
+
+Uninomial <- CapWord (_ Author)?
+
+Author <- CapWord (_? Year)?
+
+Year <- [12] [0789] num num
+
+CapWord <- hASCII Word
+
+Word <- lASCII+
+
+num <- [0-9]
+
+hASCII <- [A-Z]
+
+lASCII <- [a-z]
+
+_ <- " "+
