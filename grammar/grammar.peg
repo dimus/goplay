@@ -1,11 +1,11 @@
 package grammar
 
-type GNParser Peg {
+type Engine Peg {
 }
 
 SciName <- _? SciName1 (.*) !.
 
-SciName1 <- SciName2 { fmt.Println(buffer[begin:end])}
+SciName1 <- SciName2
 
 SciName2 <- Name
 
