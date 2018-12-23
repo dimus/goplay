@@ -5,7 +5,7 @@ type GNParser Peg {
 
 SciName <- _? SciName1 (.*) !.
 
-SciName1 <- SciName2
+SciName1 <- SciName2 { fmt.Println(buffer[begin:end])}
 
 SciName2 <- Name
 
@@ -25,7 +25,8 @@ NameApprox <- GenusWord _ Approximation (_ SpeciesEpithet)?
 
 NameComp <- GenusWord _ Comparison (_ SpeciesEpithet)?
 
-NameSpecies <- GenusWord (_? (SubGenus / SubGenusOrSuperspecies))? _ SpeciesEpithet (_ InfraspGroup)?
+NameSpecies <- GenusWord (_? (SubGenus / SubGenusOrSuperspecies))?
+               _ SpeciesEpithet (_ InfraspGroup)?
 
 GenusWord <- (AbbrGenus / UninomialWord) !(_ AuthorWord)
 
@@ -33,18 +34,18 @@ InfraspGroup <- InfraspEpithet (_ InfraspEpithet)?  (_ InfraspEpithet)?
 
 InfraspEpithet <- (Rank _?)? !(AuthorEx) Word  (_ Authorship)?
 
-SpeciesEpithet <- !(AuthorEx) Word (_? Authorship)? ','? &(SpaceCharEOI / '(') 
+SpeciesEpithet <- !(AuthorEx) Word (_? Authorship)? ','? &(SpaceCharEOI / '(')
 
 Comparison <- ('cf' '.'?)
 
 Rank <- RankForma / RankVar / RankSsp / RankOther / RankOtherUncommon
 
-RankOtherUncommon <- ('*' / 'nat' / 'f.sp' / 'mut.') &(SpaceCharEOI) 
+RankOtherUncommon <- ('*' / 'nat' / 'f.sp' / 'mut.') &(SpaceCharEOI)
 
-RankOther <- ('morph.' / 'nothosubsp.' / 'convar.' / 'pseudovar.' / 'sect.' / 'ser.' /
-  'subvar.' / 'subf.' / 'race' / 'α' / 'ββ' / 'β' / 'γ' / 'δ' / 'ε' / 'φ' / 'θ' / 'μ' /
-  'a.' / 'b.' / 'c.' / 'd.' / 'e.' / 'g.' / 'k.' / 'pv.' / 'pathovar.' /
-  ('ab.' (_? 'n.')?) / 'st.') &(SpaceCharEOI)
+RankOther <- ('morph.' / 'nothosubsp.' / 'convar.' / 'pseudovar.' / 'sect.' /
+  'ser.' / 'subvar.' / 'subf.' / 'race' / 'α' / 'ββ' / 'β' / 'γ' / 'δ' / 'ε' /
+  'φ' / 'θ' / 'μ' / 'a.' / 'b.' / 'c.' / 'd.' / 'e.' / 'g.' / 'k.' / 'pv.' /
+  'pathovar.' / ('ab.' (_? 'n.')?) / 'st.') &(SpaceCharEOI)
 
 RankVar <- 'variety' / '[var.]' / 'nvar.' / ('var' (&(SpaceCharEOI) / '.'))
 
@@ -58,14 +59,14 @@ SubGenus <- '(' _? UninomialWord _? ')'
 
 UninomialCombo <- UninomialCombo1 / UninomialCombo2
 
-UninomialCombo1 <- UninomialWord _? SubGenus _? Authorship.? 
+UninomialCombo1 <- UninomialWord _? SubGenus _? Authorship.?
 
-UninomialCombo2 <- Uninomial _? RankUninomial _? Uninomial 
+UninomialCombo2 <- Uninomial _? RankUninomial _? Uninomial
 
 RankUninomial <- ('sect' / 'subsect' / 'trib' / 'subtrib' / 'subser' / 'ser' /
-  'subgen' / 'fam' / 'subfam' / 'supertrib') '.'? 
+  'subgen' / 'fam' / 'subfam' / 'supertrib') '.'?
 
-Uninomial <- UninomialWord (_ Authorship)? 
+Uninomial <- UninomialWord (_ Authorship)?
 
 UninomialWord <- CapWord / TwoLetterGenus
 
@@ -73,9 +74,9 @@ AbbrGenus <- UpperChar LowerChar* '.'
 
 CapWord <- CapWord2 / CapWord1
 
-CapWord1 <- NameUpperChar NameLowerChar NameLowerChar+ '?'? 
+CapWord1 <- NameUpperChar NameLowerChar NameLowerChar+ '?'?
 
-CapWord2 <- CapWord1 dash (CapWord1 / Word1) 
+CapWord2 <- CapWord1 dash (CapWord1 / Word1)
 
 TwoLetterGenus <- ('Ca' / 'Ea' / 'Ge' / 'Ia' / 'Io' / 'Ix' / 'Lo' / 'Oa' /
   'Ra' / 'Ty' / 'Ua' / 'Aa' / 'Ja' / 'Zu' / 'La' / 'Qu' / 'As' / 'Ba')
@@ -85,7 +86,8 @@ Word <- !(AuthorPrefix / RankUninomial / Approximation / Word4)
 
 Word1 <- (lASCII dash)? NameLowerChar NameLowerChar+
 
-Word2StartDigit <- [123456789] nums? ('.' / dash)? NameLowerChar NameLowerChar NameLowerChar NameLowerChar+
+Word2StartDigit <- [123456789] nums? ('.' / dash)? NameLowerChar NameLowerChar
+  NameLowerChar NameLowerChar+
 
 Word2 <- NameLowerChar+ dash? NameLowerChar
 
@@ -110,7 +112,8 @@ Authorship <- (Authorship1 / Authorship2) &(SpaceCharEOI / [\\(,:])
 
 Authorship1 <- Authorship2 _? AuthorsGroup
 
-Authorship2 <- (AuthorsGroup / BasionymAuthorship / BasionymAuthorshipYearMisformed)
+Authorship2 <- (AuthorsGroup / BasionymAuthorship /
+  BasionymAuthorshipYearMisformed)
 
 BasionymAuthorshipYearMisformed <- '(' _? AuthorsGroup _? ')' (_? ',')? _? Year
 
@@ -148,9 +151,11 @@ AuthorWord1 <- 'arg.' / 'et al.{?}' / ('et' / '&') ' al' '.'?
 
 AuthorWord2 <- AuthorWord3 dash AuthorWordSoft
 
-AuthorWord3 <- AuthorPrefixGlued? AuthorUpperChar (AuthorUpperChar / AuthorLowerChar)* '.'?
+AuthorWord3 <- AuthorPrefixGlued? AuthorUpperChar (AuthorUpperChar /
+  AuthorLowerChar)* '.'?
 
-AuthorWordSoft <- ((AuthorUpperChar (AuthorUpperChar+ / AuthorLowerChar+)) / AuthorLowerChar+) '.'?
+AuthorWordSoft <- ((AuthorUpperChar (AuthorUpperChar+ / AuthorLowerChar+)) /
+  AuthorLowerChar+) '.'?
 
 Filius <- 'f.' / 'fil.' / 'filius'
 
@@ -164,12 +169,15 @@ AuthorPrefix1 <- ('ab' / 'af' / 'bis' / 'da' / 'der' / 'des' / 'den' / 'del' /
   'della' / 'dela' / 'de' / 'di' / 'du' / 'el' / 'la' / 'le' / 'ter' / 'van' /
   'd\'' / 'in\'t' / 'zur' / ('von' (_ 'd.')?) / ('v' (_'d')?)) &_
 
-AuthorUpperChar <- hASCII / [ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝĆČĎİĶĹĺĽľŁłŅŌŐŒŘŚŜŞŠŸŹŻŽƒǾȘȚ]
+AuthorUpperChar <- hASCII /
+  [ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝĆČĎİĶĹĺĽľŁłŅŌŐŒŘŚŜŞŠŸŹŻŽƒǾȘȚ]
 
 
-AuthorLowerChar <- lASCII / [àáâãäåæçèéêëìíîïðñòóóôõöøùúûüýÿāăąćĉčďđ'ēĕėęěğīĭİıĺľłńņňŏőœŕřśşšţťũūŭůűźżžſǎǔǧșțȳß] / apostr
+AuthorLowerChar <- lASCII /
+  [àáâãäåæçèéêëìíîïðñòóóôõöøùúûüýÿāăąćĉčďđ'ēĕėęěğīĭİıĺľłńņňŏőœŕřśşšţťũūŭůűźżžſǎǔǧșțȳß]
 
-Year <- YearRange / YearApprox / YearWithParens / YearWithPage / YearWithDot / YearWithChar / YearNum
+Year <- YearRange / YearApprox / YearWithParens / YearWithPage / YearWithDot /
+  YearWithChar / YearNum
 
 YearRange <- YearNum dash (nums+ [abcdefghijklmnopqrstuvwxyz?]*)
 

@@ -2,12 +2,16 @@ package main
 
 import (
 	"log"
+	"os"
+	"runtime/pprof"
 	"sync"
 
 	"github.com/dimus/goplay/grammar"
 )
 
 func main() {
+	pprof.StartCPUProfile(os.Stdout)
+	defer pprof.StopCPUProfile()
 	var wg sync.WaitGroup
 	wg.Add(12)
 	in := make(chan string)
@@ -73,13 +77,15 @@ func setInput(in chan<- string) {
 
 func worker(in <-chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
+	gnp := &grammar.GNParser{}
+	gnp.Init()
 	for v := range in {
-		gnp := &grammar.GNParser{Buffer: v, Pretty: true}
-		gnp.Init()
+		gnp.Buffer = v
+		gnp.Reset()
 		err := gnp.Parse()
 		if err != nil {
 			log.Printf("No parse for '%s': %s\n", v, err)
 		}
-		// gnp.PrintSyntaxTree()
+		gnp.PrintSyntaxTree()
 	}
 }

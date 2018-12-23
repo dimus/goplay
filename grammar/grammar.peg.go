@@ -119,6 +119,7 @@ const (
 	ruleapostr
 	ruledash
 	rule_
+	ruleAction0
 )
 
 var rul3s = [...]string{
@@ -224,6 +225,7 @@ var rul3s = [...]string{
 	"apostr",
 	"dash",
 	"_",
+	"Action0",
 }
 
 type token32 struct {
@@ -342,7 +344,7 @@ func (t *tokens32) Tokens() []token32 {
 type GNParser struct {
 	Buffer string
 	buffer []rune
-	rules  [102]func() bool
+	rules  [103]func() bool
 	parse  func(rule ...int) error
 	reset  func()
 	Pretty bool
@@ -427,6 +429,19 @@ func (p *GNParser) PrintSyntaxTree() {
 
 func (p *GNParser) WriteSyntaxTree(w io.Writer) {
 	p.tokens32.WriteSyntaxTree(w, p.Buffer)
+}
+
+func (p *GNParser) Execute() {
+	buffer, _buffer, text, begin, end := p.Buffer, p.buffer, "", 0, 0
+	for _, token := range p.Tokens() {
+		switch token.pegRule {
+
+		case ruleAction0:
+			fmt.Println(buffer[begin:end])
+
+		}
+	}
+	_, _, _, _, _ = buffer, _buffer, text, begin, end
 }
 
 func (p *GNParser) Init() {
@@ -541,12 +556,15 @@ func (p *GNParser) Init() {
 			position, tokenIndex = position0, tokenIndex0
 			return false
 		},
-		/* 1 SciName1 <- <SciName2> */
+		/* 1 SciName1 <- <(SciName2 Action0)> */
 		func() bool {
 			position7, tokenIndex7 := position, tokenIndex
 			{
 				position8 := position
 				if !_rules[ruleSciName2]() {
+					goto l7
+				}
+				if !_rules[ruleAction0]() {
 					goto l7
 				}
 				add(ruleSciName1, position8)
@@ -7177,6 +7195,13 @@ func (p *GNParser) Init() {
 		l829:
 			position, tokenIndex = position829, tokenIndex829
 			return false
+		},
+		/* 102 Action0 <- <{ fmt.Println(buffer[begin:end])}> */
+		func() bool {
+			{
+				add(ruleAction0, position)
+			}
+			return true
 		},
 	}
 	p.rules = _rules
