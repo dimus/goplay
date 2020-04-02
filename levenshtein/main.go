@@ -21,23 +21,23 @@ func main() {
 	stems := getData()
 	_ = stems
 	buildTrie(trie, stems)
-	raw := getRaw()
-	log.Printf("start")
+	raw := getRaw(gnp, trie)
+	log.Printf("Found %d stem to check", len(raw))
+	log.Println("start")
 	count := 0
-	for _, v := range raw {
-		stem := getStem(gnp, v)
-		if trie.Exists(v) {
-			continue
-		}
+	for k, v := range raw {
 		count += 1
+		if count%10_000 == 0 {
+			log.Printf("Processing %d-th row", count)
+		}
 		matches := trie.FuzzyMatches(v, 2)
-		fmt.Printf("\n%s: %s\n", v, stem)
+		fmt.Printf("\n%s:   %s\n", k, v)
 		for _, vv := range matches {
-			fmt.Printf("  %s: %s\n", v, vv)
+			fmt.Printf("  %s: %s\n", k, vv)
 		}
 	}
-	log.Printf("end")
-	fmt.Println(count)
+	log.Println("end")
+	fmt.Println(len(raw))
 }
 
 func getStem(gnp gnparser.GNparser, n string) string {
@@ -49,18 +49,25 @@ func getStem(gnp gnparser.GNparser, n string) string {
 	}
 }
 
-func getRaw() []string {
-	var names []string
+func getRaw(gnp gnparser.GNparser, trie *levenshtein.Trie) map[string]string {
+	names := make(map[string]string)
 	f, err := os.Open("data/raw-names.txt")
 	if err != nil {
 		panic(err)
 	}
-
+	count := 0
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		names = append(names, scanner.Text())
+		name := scanner.Text()
+		stem := getStem(gnp, name)
+		if stem != "" && !trie.Exists(stem) {
+			names[name] = stem
+		} else {
+			count += 1
+		}
 	}
+	log.Printf("Found %d exact stem matches\n", count)
 	return names
 }
 
@@ -75,19 +82,19 @@ func getData() []string {
 	}
 	bsr := bytes.NewReader(bs)
 	scanner := bufio.NewScanner(bsr)
-	canonicals := make([]string, 0, 10_000_000)
+	stems := make([]string, 0, 10_000_000)
 	for scanner.Scan() {
-		canonicals = append(canonicals, scanner.Text())
+		stems = append(stems, scanner.Text())
 	}
 
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
-	return canonicals
+	return stems
 }
 
-func buildTrie(trie *levenshtein.Trie, canonicals []string) {
-	for _, v := range canonicals {
+func buildTrie(trie *levenshtein.Trie, stems []string) {
+	for _, v := range stems {
 		trie.Insert(v)
 	}
 }
