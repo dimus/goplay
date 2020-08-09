@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/dimus/goplay/natsm/pb"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -12,7 +13,7 @@ const (
 
 func main() {
 	uri := NatsURL
-	sd := &ServiceDiscovery{
+	sd := &pb.ServiceDiscovery{
 		OrderServiceUri: uri,
 	}
 	psd, err := proto.Marshal(sd)
