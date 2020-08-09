@@ -4,20 +4,24 @@ import (
 	"log"
 	"time"
 
-	nats "github.com/nats-io/nats"
+	nats "github.com/nats-io/nats.go"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+)
+
+const (
+	NatsURL = "nats://pi:4222"
 )
 
 func main() {
 
 	// Create NATS server connection
-	natsConnection, _ := nats.Connect(nats.DefaultURL)
-	log.Println("Connected to " + nats.DefaultURL)
+	natsConnection, _ := nats.Connect(NatsURL)
+	log.Println("Connected to " + NatsURL)
 
 	msg, err := natsConnection.Request("Discovery.OrderService", nil, 1000*time.Millisecond)
 	if err == nil && msg != nil {
-		orderServiceDiscovery := pb.ServiceDiscovery{}
+		orderServiceDiscovery := ServiceDiscovery{}
 		err := proto.Unmarshal(msg.Data, &orderServiceDiscovery)
 		if err != nil {
 			log.Fatalf("Error on unmarshal: %v", err)
