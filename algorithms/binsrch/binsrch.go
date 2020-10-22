@@ -1,7 +1,5 @@
 package binsrch
 
-import "fmt"
-
 func binsearch(srch int, sorted []int) int {
 	keepLeft := func(i int) bool { return srch <= sorted[i] }
 	idx := search(len(sorted), keepLeft)
@@ -33,7 +31,6 @@ func binsearch2(srch int, sorted []int) int {
 }
 
 func recursiveBinSearch(sorted []int, srch, idx int) int {
-	fmt.Printf("ary: %+v\n", sorted)
 	if len(sorted) == 0 {
 		return -1
 	}
@@ -46,11 +43,15 @@ func recursiveBinSearch(sorted []int, srch, idx int) int {
 	}
 
 	middle := len(sorted) >> 1
-	if srch <= sorted[middle] {
+	if srch == sorted[middle] {
+		return idx + middle
+	}
+
+	if srch < sorted[middle] {
 		sorted = sorted[0:middle]
 	} else {
-		sorted = sorted[middle+1:]
-		idx = idx + middle + 1
+		sorted = sorted[middle:]
+		idx = idx + middle
 	}
 	return recursiveBinSearch(sorted, srch, idx)
 }

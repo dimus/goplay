@@ -1,7 +1,6 @@
 package binsrch
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -29,7 +28,6 @@ func TestBinsearch(t *testing.T) {
 func TestBinsearch2(t *testing.T) {
 	for _, v := range tst {
 		idx := binsearch2(v[0], ary)
-		fmt.Printf("srch: %d\n", v[0])
 		if idx != v[1] {
 			t.Errorf("%d should return idx %d, returned %d", v[0], v[1], idx)
 		}
